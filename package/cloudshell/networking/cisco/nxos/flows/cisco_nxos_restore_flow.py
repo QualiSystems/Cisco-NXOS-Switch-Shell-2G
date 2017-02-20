@@ -5,7 +5,7 @@ from collections import OrderedDict
 import time
 
 from cloudshell.networking.cisco.command_actions.system_actions import SystemActions
-from cloudshell.networking.cisco.flow.cisco_restore_flow import CiscoRestoreFlow
+from cloudshell.networking.cisco.flows.cisco_restore_flow import CiscoRestoreFlow
 
 
 class CiscoNXOSRestoreFlow(CiscoRestoreFlow):
