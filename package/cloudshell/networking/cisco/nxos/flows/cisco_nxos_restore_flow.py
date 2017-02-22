@@ -29,7 +29,6 @@ class CiscoNXOSRestoreFlow(CiscoRestoreFlow):
 
         with self._cli_handler.get_cli_service(self._cli_handler.enable_mode) as enable_session:
             restore_action = SystemActions(enable_session, self._logger)
-            copy_action_map = restore_action.prepare_action_map(path, configuration_type)
             reload_action_map = self._prepare_reload_act_map()
 
             if restore_method == "override":
@@ -41,21 +40,21 @@ class CiscoNXOSRestoreFlow(CiscoRestoreFlow):
                 restore_action.copy(source=path,
                                     destination=self.TEMP_STARTUP_LOCATION,
                                     vrf=vrf_management_name,
-                                    action_map=copy_action_map)
+                                    action_map=restore_action.prepare_action_map(path, self.TEMP_STARTUP_LOCATION))
 
                 restore_action.write_erase()
                 restore_action.reload_device_via_console(action_map=reload_action_map)
 
                 restore_action.copy(source=self.TEMP_STARTUP_LOCATION,
                                     destination=self.RUNNING_LOCATION,
-                                    action_map=self.prepare_action_map(self.TEMP_STARTUP_LOCATION,
-                                                                       self.RUNNING_LOCATION))
+                                    action_map=restore_action.prepare_action_map(self.TEMP_STARTUP_LOCATION,
+                                                                                 self.RUNNING_LOCATION))
 
                 time.sleep(5)
                 restore_action.copy(source=self.RUNNING_LOCATION,
                                     destination=self.STARTUP_LOCATION,
-                                    action_map=self.prepare_action_map(self.RUNNING_LOCATION,
-                                                                       self.STARTUP_LOCATION),
+                                    action_map=restore_action.prepare_action_map(self.RUNNING_LOCATION,
+                                                                                 self.STARTUP_LOCATION),
                                     timeout=200)
 
             elif "startup" in configuration_type:
@@ -65,7 +64,7 @@ class CiscoNXOSRestoreFlow(CiscoRestoreFlow):
                 restore_action.copy(source=path,
                                     destination=configuration_type,
                                     vrf=vrf_management_name,
-                                    action_map=copy_action_map)
+                                    action_map=restore_action.prepare_action_map(path, configuration_type))
 
     def _prepare_reload_act_map(self):
         action_map = OrderedDict()
