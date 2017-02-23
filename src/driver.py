@@ -102,44 +102,6 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
         result_str = send_command_operations.run_custom_config_command(custom_command=custom_command)
         return result_str
 
-    def send_custom_command(self, context, custom_command):
-        """Send custom command in configuration mode
-
-        :param ResourceCommandContext context: ResourceCommandContext object with all Resource Attributes inside
-        :return: result
-        :rtype: str
-        """
-
-        logger = get_logger_with_thread_id(context)
-        api = get_api(context)
-
-        resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
-                                                                  supported_os=self.SUPPORTED_OS,
-                                                                  context=context)
-
-        send_command_operations = CommandRunner(cli=self._cli, logger=logger, resource_config=resource_config, api=api)
-        response = send_command_operations.run_custom_command(custom_command=custom_command)
-        return response
-
-    def send_custom_config_command(self, context, custom_command):
-        """Send custom command in configuration mode
-
-        :param ResourceCommandContext context: ResourceCommandContext object with all Resource Attributes inside
-        :return: result
-        :rtype: str
-        """
-
-        logger = get_logger_with_thread_id(context)
-        api = get_api(context)
-
-        resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
-                                                                  supported_os=self.SUPPORTED_OS,
-                                                                  context=context)
-
-        send_command_operations = CommandRunner(cli=self._cli, logger=logger, resource_config=resource_config, api=api)
-        result_str = send_command_operations.run_custom_config_command(custom_command=custom_command)
-        return result_str
-
     def ApplyConnectivityChanges(self, context, request):
         """
         Create vlan and add or remove it to/from network interface
@@ -164,7 +126,7 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
         logger.info('Apply Connectivity changes completed')
         return result
 
-    def save(self, context, folder_path, configuration_type, vrf_management_name=None):
+    def save(self, context, folder_path, configuration_type, vrf_management_name):
         """Save selected file to the provided destination
 
         :param ResourceCommandContext context: ResourceCommandContext object with all Resource Attributes inside
@@ -198,7 +160,7 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
         return response
 
     @GlobalLock.lock
-    def restore(self, context, path, configuration_type, restore_method, vrf_management_name=None):
+    def restore(self, context, path, configuration_type, restore_method, vrf_management_name):
         """Restore selected file to the provided destination
 
         :param ResourceCommandContext context: ResourceCommandContext object with all Resource Attributes inside
@@ -234,7 +196,7 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
                                          vrf_management_name=vrf_management_name)
         logger.info('Restore completed')
 
-    def orchestration_save(self, context, mode='shallow', custom_params=None):
+    def orchestration_save(self, context, mode, custom_params):
         """
 
         :param ResourceCommandContext context: ResourceCommandContext object with all Resource Attributes inside
@@ -263,7 +225,7 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
         logger.info('Orchestration save completed')
         return response
 
-    def orchestration_restore(self, context, saved_artifact_info, custom_params=None):
+    def orchestration_restore(self, context, saved_artifact_info, custom_params):
         """
 
         :param ResourceCommandContext context: ResourceCommandContext object with all Resource Attributes inside
@@ -289,7 +251,7 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
         logger.info('Orchestration restore completed')
 
     @GlobalLock.lock
-    def load_firmware(self, context, path, vrf_management_name=None):
+    def load_firmware(self, context, path, vrf_management_name):
         """Upload and updates firmware on the resource
 
         :param ResourceCommandContext context: ResourceCommandContext object with all Resource Attributes inside
@@ -311,30 +273,6 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
         firmware_operations = FirmwareRunner(cli=self._cli, logger=logger, resource_config=resource_config, api=api)
         response = firmware_operations.load_firmware(path=path, vrf_management_name=vrf_management_name)
         logger.info('Finish Load Firmware: {}'.format(response))
-
-    @GlobalLock.lock
-    def update_firmware(self, context, remote_host, file_path):
-        """Upload and updates firmware on the resource
-
-        :param remote_host: path to firmware file location on ftp or tftp server
-        :param file_path: firmware file name
-        :return: result
-        :rtype: str
-        """
-
-        logger = get_logger_with_thread_id(context)
-        api = get_api(context)
-
-        resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
-                                                                  supported_os=self.SUPPORTED_OS,
-                                                                  context=context)
-
-        vrf_management_name = resource_config.vrf_management_name
-
-        logger.info('Start Update Firmware')
-        firmware_operations = FirmwareRunner(cli=self._cli, logger=logger, resource_config=resource_config, api=api)
-        response = firmware_operations.load_firmware(path=remote_host, vrf_management_name=vrf_management_name)
-        logger.info('Finish Update Firmware: {}'.format(response))
 
     def health_check(self, context):
         """Performs device health check
