@@ -19,7 +19,7 @@ from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterf
 
 class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInterface, GlobalLock):
     SUPPORTED_OS = ["NX[ -]?OS|NXOS"]
-    SHELL_NAME = "Cisco NXOS Switch 2 Gen"
+    SHELL_NAME = "Cisco NXOS Switch 2G"
 
     def __init__(self):
         super(CisconxosshellDriver, self).__init__()
