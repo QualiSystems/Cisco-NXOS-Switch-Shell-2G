@@ -3,9 +3,10 @@
 
 
 from cloudshell.devices.driver_helper import get_logger_with_thread_id, get_api, get_cli
-from cloudshell.devices.standards.networking.configuration_attributes_structure import create_networking_resource_from_context
-from cloudshell.networking.cisco.nxos.runners.cisco_nxos_connectivity_runner import \
-    CiscoNXOSConnectivityRunner as ConnectivityRunner
+from cloudshell.devices.standards.networking.configuration_attributes_structure import \
+    create_networking_resource_from_context
+from cloudshell.networking.cisco.runners.cisco_connectivity_runner import \
+    CiscoConnectivityRunner as ConnectivityRunner
 from cloudshell.networking.cisco.nxos.runners.cisco_nxos_configuration_runner import \
     CiscoNXOSConfigurationRunner as ConfigurationRunner
 from cloudshell.networking.cisco.runners.cisco_autoload_runner import CiscoAutoloadRunner as AutoloadRunner
@@ -311,4 +312,3 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
 
         state_operations = StateRunner(cli=self._cli, logger=logger, api=api, resource_config=resource_config)
         return state_operations.shutdown()
-
