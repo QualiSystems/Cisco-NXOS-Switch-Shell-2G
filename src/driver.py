@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
+from cloudshell.cli.command_template.command_template import CommandTemplate
 
 from cloudshell.devices.driver_helper import get_logger_with_thread_id, get_api, get_cli
 from cloudshell.devices.standards.networking.configuration_attributes_structure import \
     create_networking_resource_from_context
+from cloudshell.networking.cisco.command_templates import add_remove_vlan
 from cloudshell.networking.cisco.runners.cisco_connectivity_runner import \
     CiscoConnectivityRunner as ConnectivityRunner
 from cloudshell.networking.cisco.nxos.runners.cisco_nxos_configuration_runner import \
@@ -21,6 +22,12 @@ from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterf
 class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInterface, GlobalLock):
     SUPPORTED_OS = ["NX[ -]?OS|NXOS"]
     SHELL_NAME = "Cisco NXOS Switch 2G"
+    NXOS_L2_TUNNEL = CommandTemplate("l2protocol tunnel",
+                                     action_map=add_remove_vlan.ACTION_MAP,
+                                     error_map=add_remove_vlan.ERROR_MAP)
+    NXOS_NO_L2_TUNNEL = CommandTemplate("no l2protocol tunnel",
+                                        action_map=add_remove_vlan.ACTION_MAP,
+                                        error_map=add_remove_vlan.ERROR_MAP)
 
     def __init__(self):
         super(CisconxosshellDriver, self).__init__()
@@ -38,6 +45,9 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
 
         session_pool_size = int(resource_config.sessions_concurrency_limit)
         self._cli = get_cli(session_pool_size)
+        # change some command constants
+        add_remove_vlan.L2_TUNNEL = self.NXOS_L2_TUNNEL
+        add_remove_vlan.NO_L2_TUNNEL = self.NXOS_NO_L2_TUNNEL
         return 'Finished initializing'
 
     @GlobalLock.lock
