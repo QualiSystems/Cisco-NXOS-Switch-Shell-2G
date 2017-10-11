@@ -11,7 +11,7 @@ CloudShell Networking Cisco NXOS Shell for Switch
 <img src="https://github.com/QualiSystems/devguide_source/raw/master/logo.png"></img>
 </p>
 
-# Cisco NXOS Shell
+# Cisco NXOS Shell 2 Gen
 This Shell supports all Cisco networking devices that run NXOS operating system.
 
 A CloudShell Shell implements integration of a device model, application or other technology with CloudShell. A Shell consists of a data-model that defines how the device and its properties are modeled in CloudShell along with an automation that enables interaction with the device via CloudShell.
