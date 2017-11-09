@@ -1,17 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from cloudshell.cli.command_template.command_template import CommandTemplate
 
 from cloudshell.devices.driver_helper import get_logger_with_thread_id, get_api, get_cli
+from cloudshell.devices.driver_helper import parse_custom_commands
 from cloudshell.devices.standards.networking.configuration_attributes_structure import \
     create_networking_resource_from_context
-from cloudshell.networking.cisco.command_templates import add_remove_vlan
-from cloudshell.networking.cisco.runners.cisco_connectivity_runner import \
-    CiscoConnectivityRunner as ConnectivityRunner
+from cloudshell.networking.cisco.nxos.runners.cisco_nxos_connectivity_runner import \
+    CiscoNXOSConnectivityRunner as ConnectivityRunner
 from cloudshell.networking.cisco.nxos.runners.cisco_nxos_configuration_runner import \
     CiscoNXOSConfigurationRunner as ConfigurationRunner
 from cloudshell.networking.cisco.runners.cisco_autoload_runner import CiscoAutoloadRunner as AutoloadRunner
-from cloudshell.networking.cisco.runners.cisco_firmware_runner import CiscoFirmwareRunner as FirmwareRunner
+from cloudshell.networking.cisco.nxos.runners.cisco_nxos_firmware_runner import CiscoNXOSFirmwareRunner as FirmwareRunner
 from cloudshell.networking.cisco.runners.cisco_run_command_runner import CiscoRunCommandRunner as CommandRunner
 from cloudshell.networking.cisco.runners.cisco_state_runner import CiscoStateRunner as StateRunner
 from cloudshell.networking.networking_resource_driver_interface import NetworkingResourceDriverInterface
@@ -22,12 +21,6 @@ from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterf
 class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInterface, GlobalLock):
     SUPPORTED_OS = ["NX[ -]?OS|NXOS"]
     SHELL_NAME = "Cisco NXOS Switch 2G"
-    NXOS_L2_TUNNEL = CommandTemplate("l2protocol tunnel",
-                                     action_map=add_remove_vlan.ACTION_MAP,
-                                     error_map=add_remove_vlan.ERROR_MAP)
-    NXOS_NO_L2_TUNNEL = CommandTemplate("no l2protocol tunnel",
-                                        action_map=add_remove_vlan.ACTION_MAP,
-                                        error_map=add_remove_vlan.ERROR_MAP)
 
     def __init__(self):
         super(CisconxosshellDriver, self).__init__()
@@ -45,9 +38,6 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
 
         session_pool_size = int(resource_config.sessions_concurrency_limit)
         self._cli = get_cli(session_pool_size)
-        # change some command constants
-        add_remove_vlan.L2_TUNNEL = self.NXOS_L2_TUNNEL
-        add_remove_vlan.NO_L2_TUNNEL = self.NXOS_NO_L2_TUNNEL
         return 'Finished initializing'
 
     @GlobalLock.lock
@@ -91,7 +81,9 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
                                                                   context=context)
 
         send_command_operations = CommandRunner(cli=self._cli, logger=logger, resource_config=resource_config, api=api)
-        response = send_command_operations.run_custom_command(custom_command=custom_command)
+
+        response = send_command_operations.run_custom_command(custom_command=parse_custom_commands(custom_command))
+
         return response
 
     def run_custom_config_command(self, context, custom_command):
@@ -110,7 +102,10 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
                                                                   context=context)
 
         send_command_operations = CommandRunner(cli=self._cli, logger=logger, resource_config=resource_config, api=api)
-        result_str = send_command_operations.run_custom_config_command(custom_command=custom_command)
+
+        result_str = send_command_operations.run_custom_config_command(
+            custom_command=parse_custom_commands(custom_command))
+
         return result_str
 
     def ApplyConnectivityChanges(self, context, request):

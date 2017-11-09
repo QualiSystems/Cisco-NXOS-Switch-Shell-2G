@@ -16,9 +16,9 @@ setup(
     author='QualiSystems',
     author_email='info@qualisystems.com',
     packages=find_packages(),
-	install_requires=required,
+    install_requires=required,
     tests_require=required_for_tests,
     version=version_from_file,
     description='QualiSystems networking cisco NxOS specific Package',
-    include_package_data = True
+    include_package_data=True
 )
