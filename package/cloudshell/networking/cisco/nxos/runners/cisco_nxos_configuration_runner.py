@@ -3,7 +3,6 @@ from cloudshell.networking.cisco.runners.cisco_configuration_runner import Cisco
 
 
 class CiscoNXOSConfigurationRunner(CiscoConfigurationRunner):
-
     @property
     def restore_flow(self):
         return CiscoNXOSRestoreFlow(cli_handler=self.cli_handler, logger=self._logger)
