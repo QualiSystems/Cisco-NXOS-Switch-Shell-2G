@@ -7,10 +7,10 @@ Tests for `CisconxosshellDriver`
 
 import unittest
 
-from driver import CisconxosshellDriver
+from src.driver import CiscoNXOSShellDriver
 
 
-class TestCisconxosshellDriver(unittest.TestCase):
+class TestCiscoNXOSShellDriver(unittest.TestCase):
 
     def setUp(self):
         pass

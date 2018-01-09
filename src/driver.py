@@ -10,11 +10,12 @@ from cloudshell.networking.cisco.nxos.runners.cisco_nxos_connectivity_runner imp
     CiscoNXOSConnectivityRunner as ConnectivityRunner
 from cloudshell.networking.cisco.nxos.runners.cisco_nxos_configuration_runner import \
     CiscoNXOSConfigurationRunner as ConfigurationRunner
-from cloudshell.networking.cisco.nxos.snmp.cisco_nxos_snmp_handler import CiscoNXOSSnmpHandler
+from cloudshell.networking.cisco.nxos.snmp.cisco_nxos_snmp_handler import CiscoNXOSSnmpHandler as SNMPHandler
 from cloudshell.networking.cisco.runners.cisco_autoload_runner import \
     CiscoAutoloadRunner as AutoloadRunner
 from cloudshell.networking.cisco.nxos.runners.cisco_nxos_firmware_runner import \
     CiscoNXOSFirmwareRunner as FirmwareRunner
+
 from cloudshell.devices.runners.run_command_runner import RunCommandRunner as CommandRunner
 from cloudshell.devices.runners.state_runner import StateRunner as StateRunner
 from cloudshell.networking.networking_resource_driver_interface import NetworkingResourceDriverInterface
@@ -22,12 +23,12 @@ from cloudshell.shell.core.driver_utils import GlobalLock
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 
 
-class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInterface, GlobalLock):
+class CiscoNXOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInterface, GlobalLock):
     SUPPORTED_OS = ["NX[ -]?OS|NXOS"]
     SHELL_NAME = "Cisco NXOS Switch 2G"
 
     def __init__(self):
-        super(CisconxosshellDriver, self).__init__()
+        super(CiscoNXOSShellDriver, self).__init__()
         self._cli = None
 
     def initialize(self, context):
@@ -60,7 +61,7 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
                                                                   supported_os=self.SUPPORTED_OS,
                                                                   context=context)
         cli_handler = CliHandler(self._cli, resource_config, logger, api)
-        snmp_handler = CiscoNXOSSnmpHandler(resource_config, logger, api, cli_handler)
+        snmp_handler = SNMPHandler(resource_config, logger, api, cli_handler)
 
         autoload_operations = AutoloadRunner(logger=logger,
                                              resource_config=resource_config,
