@@ -5,25 +5,30 @@ from cloudshell.devices.driver_helper import get_logger_with_thread_id, get_api,
 from cloudshell.devices.driver_helper import parse_custom_commands
 from cloudshell.devices.standards.networking.configuration_attributes_structure import \
     create_networking_resource_from_context
+from cloudshell.networking.cisco.nxos.cli.cisco_nxos_cli_handler import CiscoNXOSCliHandler as CliHandler
 from cloudshell.networking.cisco.nxos.runners.cisco_nxos_connectivity_runner import \
     CiscoNXOSConnectivityRunner as ConnectivityRunner
 from cloudshell.networking.cisco.nxos.runners.cisco_nxos_configuration_runner import \
     CiscoNXOSConfigurationRunner as ConfigurationRunner
-from cloudshell.networking.cisco.runners.cisco_autoload_runner import CiscoAutoloadRunner as AutoloadRunner
-from cloudshell.networking.cisco.nxos.runners.cisco_nxos_firmware_runner import CiscoNXOSFirmwareRunner as FirmwareRunner
-from cloudshell.networking.cisco.runners.cisco_run_command_runner import CiscoRunCommandRunner as CommandRunner
-from cloudshell.networking.cisco.runners.cisco_state_runner import CiscoStateRunner as StateRunner
+from cloudshell.networking.cisco.nxos.snmp.cisco_nxos_snmp_handler import CiscoNXOSSnmpHandler as SNMPHandler
+from cloudshell.networking.cisco.runners.cisco_autoload_runner import \
+    CiscoAutoloadRunner as AutoloadRunner
+from cloudshell.networking.cisco.nxos.runners.cisco_nxos_firmware_runner import \
+    CiscoNXOSFirmwareRunner as FirmwareRunner
+
+from cloudshell.devices.runners.run_command_runner import RunCommandRunner as CommandRunner
+from cloudshell.devices.runners.state_runner import StateRunner as StateRunner
 from cloudshell.networking.networking_resource_driver_interface import NetworkingResourceDriverInterface
 from cloudshell.shell.core.driver_utils import GlobalLock
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 
 
-class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInterface, GlobalLock):
+class CiscoNXOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInterface, GlobalLock):
     SUPPORTED_OS = ["NX[ -]?OS|NXOS"]
     SHELL_NAME = "Cisco NXOS Switch 2G"
 
     def __init__(self):
-        super(CisconxosshellDriver, self).__init__()
+        super(CiscoNXOSShellDriver, self).__init__()
         self._cli = None
 
     def initialize(self, context):
@@ -55,11 +60,12 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
         resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
                                                                   supported_os=self.SUPPORTED_OS,
                                                                   context=context)
+        cli_handler = CliHandler(self._cli, resource_config, logger, api)
+        snmp_handler = SNMPHandler(resource_config, logger, api, cli_handler)
 
-        autoload_operations = AutoloadRunner(cli=self._cli,
-                                             logger=logger,
+        autoload_operations = AutoloadRunner(logger=logger,
                                              resource_config=resource_config,
-                                             api=api)
+                                             snmp_handler=snmp_handler)
         logger.info('Autoload started')
         response = autoload_operations.discover()
         logger.info('Autoload completed')
@@ -80,7 +86,8 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
                                                                   supported_os=self.SUPPORTED_OS,
                                                                   context=context)
 
-        send_command_operations = CommandRunner(cli=self._cli, logger=logger, resource_config=resource_config, api=api)
+        cli_handler = CliHandler(self._cli, resource_config, logger, api)
+        send_command_operations = CommandRunner(logger=logger, cli_handler=cli_handler)
 
         response = send_command_operations.run_custom_command(custom_command=parse_custom_commands(custom_command))
 
@@ -101,7 +108,8 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
                                                                   supported_os=self.SUPPORTED_OS,
                                                                   context=context)
 
-        send_command_operations = CommandRunner(cli=self._cli, logger=logger, resource_config=resource_config, api=api)
+        cli_handler = CliHandler(self._cli, resource_config, logger, api)
+        send_command_operations = CommandRunner(logger=logger, cli_handler=cli_handler)
 
         result_str = send_command_operations.run_custom_config_command(
             custom_command=parse_custom_commands(custom_command))
@@ -124,8 +132,8 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
                                                                   supported_os=self.SUPPORTED_OS,
                                                                   context=context)
 
-        connectivity_operations = ConnectivityRunner(cli=self._cli, resource_config=resource_config, api=api,
-                                                     logger=logger)
+        cli_handler = CliHandler(self._cli, resource_config, logger, api)
+        connectivity_operations = ConnectivityRunner(logger=logger, cli_handler=cli_handler)
         logger.info('Start applying connectivity changes, request is: {0}'.format(str(request)))
         result = connectivity_operations.apply_connectivity_changes(request=request)
         logger.info('Finished applying connectivity changes, response is: {0}'.format(str(result)))
@@ -155,7 +163,8 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
         if not vrf_management_name:
             vrf_management_name = resource_config.vrf_management_name
 
-        configuration_operations = ConfigurationRunner(cli=self._cli,
+        cli_handler = CliHandler(self._cli, resource_config, logger, api)
+        configuration_operations = ConfigurationRunner(cli_handler=cli_handler,
                                                        logger=logger,
                                                        resource_config=resource_config,
                                                        api=api)
@@ -192,7 +201,8 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
         if not vrf_management_name:
             vrf_management_name = resource_config.vrf_management_name
 
-        configuration_operations = ConfigurationRunner(cli=self._cli,
+        cli_handler = CliHandler(self._cli, resource_config, logger, api)
+        configuration_operations = ConfigurationRunner(cli_handler=cli_handler,
                                                        logger=logger,
                                                        resource_config=resource_config,
                                                        api=api)
@@ -221,7 +231,8 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
                                                                   supported_os=self.SUPPORTED_OS,
                                                                   context=context)
 
-        configuration_operations = ConfigurationRunner(cli=self._cli,
+        cli_handler = CliHandler(self._cli, resource_config, logger, api)
+        configuration_operations = ConfigurationRunner(cli_handler=cli_handler,
                                                        logger=logger,
                                                        resource_config=resource_config,
                                                        api=api)
@@ -246,7 +257,8 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
                                                                   supported_os=self.SUPPORTED_OS,
                                                                   context=context)
 
-        configuration_operations = ConfigurationRunner(cli=self._cli,
+        cli_handler = CliHandler(self._cli, resource_config, logger, api)
+        configuration_operations = ConfigurationRunner(cli_handler=cli_handler,
                                                        logger=logger,
                                                        resource_config=resource_config,
                                                        api=api)
@@ -275,8 +287,10 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
         if not vrf_management_name:
             vrf_management_name = resource_config.vrf_management_name
 
+        cli_handler = CliHandler(self._cli, resource_config, logger, api)
+
         logger.info('Start Load Firmware')
-        firmware_operations = FirmwareRunner(cli=self._cli, logger=logger, resource_config=resource_config, api=api)
+        firmware_operations = FirmwareRunner(cli_handler=cli_handler, logger=logger)
         response = firmware_operations.load_firmware(path=path, vrf_management_name=vrf_management_name)
         logger.info('Finish Load Firmware: {}'.format(response))
 
@@ -294,8 +308,9 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
         resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
                                                                   supported_os=self.SUPPORTED_OS,
                                                                   context=context)
+        cli_handler = CliHandler(self._cli, resource_config, logger, api)
 
-        state_operations = StateRunner(cli=self._cli, logger=logger, api=api, resource_config=resource_config)
+        state_operations = StateRunner(logger=logger, api=api, resource_config=resource_config, cli_handler=cli_handler)
         return state_operations.health_check()
 
     def cleanup(self):
@@ -315,5 +330,7 @@ class CisconxosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInte
                                                                   supported_os=self.SUPPORTED_OS,
                                                                   context=context)
 
-        state_operations = StateRunner(cli=self._cli, logger=logger, api=api, resource_config=resource_config)
+        cli_handler = CliHandler(self._cli, resource_config, logger, api)
+        state_operations = StateRunner(logger=logger, api=api, resource_config=resource_config, cli_handler=cli_handler)
+
         return state_operations.shutdown()
