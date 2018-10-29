@@ -1,4 +1,4 @@
-# **Cisco NXOS Switch 2G Shell**
+
 CloudShell Networking Cisco NXOS Shell for Switch
 
 [![Build status](https://travis-ci.org/QualiSystems/Cisco-NXOS-Switch-Shell-2G.svg?branch=dev)](https://travis-ci.org/QualiSystems/Cisco-NXOS-Switch-Shell-2G)
@@ -6,6 +6,8 @@ CloudShell Networking Cisco NXOS Shell for Switch
 [![PyPI version](https://badge.fury.io/py/cloudshell-networking-cisco-nxos.svg)](https://badge.fury.io/py/cloudshell-networking-cisco-nxos)
 [![Dependency Status](https://dependencyci.com/github/QualiSystems/Cisco-NXOS-Switch-Shell-2G/badge)](https://dependencyci.com/github/QualiSystems/Cisco-NXOS-Switch-Shell-2G)
 [![Stories in Ready](https://badge.waffle.io/QualiSystems/Cisco-NXOS-Switch-Shell-2G.svg?label=ready&title=Ready)](http://waffle.io/QualiSystems/Cisco-NXOS-Switch-Shell-2G)
+
+# **Cisco NXOS Switch 2G Shell**
 
 ![](https://github.com/QualiSystems/cloudshell-shells-documentaion-templates/blob/master/cloudshell_logo.png)
 
