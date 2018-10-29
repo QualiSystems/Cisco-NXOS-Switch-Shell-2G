@@ -1,4 +1,4 @@
-# Cisco-NXOS-Switch-Shell
+# **Cisco NXOS Switch 2G Shell**
 CloudShell Networking Cisco NXOS Shell for Switch
 
 [![Build status](https://travis-ci.org/QualiSystems/Cisco-NXOS-Switch-Shell-2G.svg?branch=dev)](https://travis-ci.org/QualiSystems/Cisco-NXOS-Switch-Shell-2G)
