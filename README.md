@@ -271,3 +271,7 @@ To connect with Quali users and experts from around the world, ask questions and
 	* Set the following attributes: **Console Server IP Address**, **Console Port**, **User**, and **Password**.
 	
 * A new *Restore override flow* was implemented, requiring a Console Session.
+
+# Knowing Issues
+
+- Due to the Physical Entity table design, all ports that are missing a SFP or GBIC transceiver will be skipped during **Autoload**.
