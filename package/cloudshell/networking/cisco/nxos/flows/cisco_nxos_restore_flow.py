@@ -81,8 +81,10 @@ class CiscoNXOSRestoreFlow(CiscoRestoreFlow):
             lambda session, logger: session.send_line('n', logger)
         action_map[r"[Dd]o you want to enforce secure password standard"] = \
             lambda session, logger: session.send_line('n', logger)
+        # Since as a part of restore override we are doing complete configuration erase,
+        # switching Login action map to use default NXOS username - admin
         action_map['[Ll]ogin:|[Uu]ser:|[Uu]sername:'] = lambda session, logger: session.send_line(
-            self._cli_handler.username, logger)
+            "admin", logger)
         action_map['[Pp]assword.*:'] = lambda session, logger: session.send_line(
             self._cli_handler.password, logger)
         action_map[r"\[confirm\]"] = lambda session, logger: session.send_line('y', logger)
