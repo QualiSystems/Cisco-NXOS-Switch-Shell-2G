@@ -33,8 +33,7 @@ class CiscoNXOSRestoreFlow(CiscoRestoreFlow):
 
             if restore_method == "override":
                 if self._cli_handler.cli_type.lower() != "console":
-                    raise Exception(self.__class__.__name__,
-                                    "Unsupported cli session type: {0}. Only Console allowed for restore override"
+                    raise Exception("Unsupported cli session type: {0}. Only Console allowed for restore override"
                                     .format(self._cli_handler.cli_type.lower()))
 
                 restore_action.copy(source=path,
@@ -44,13 +43,17 @@ class CiscoNXOSRestoreFlow(CiscoRestoreFlow):
 
                 restore_action.write_erase()
                 restore_action.reload_device_via_console(action_map=reload_action_map)
-
+                with enable_session.enter_mode(self._cli_handler.config_mode) as config_session:
+                    config_session.send_command("")
                 restore_action.copy(source=self.TEMP_STARTUP_LOCATION,
                                     destination=self.RUNNING_LOCATION,
                                     action_map=restore_action.prepare_action_map(self.TEMP_STARTUP_LOCATION,
                                                                                  self.RUNNING_LOCATION))
 
                 time.sleep(5)
+                with enable_session.enter_mode(self._cli_handler.config_mode) as config_session:
+                    config_session.send_command("")
+                    
                 restore_action.copy(source=self.RUNNING_LOCATION,
                                     destination=self.STARTUP_LOCATION,
                                     action_map=restore_action.prepare_action_map(self.RUNNING_LOCATION,
@@ -58,8 +61,7 @@ class CiscoNXOSRestoreFlow(CiscoRestoreFlow):
                                     timeout=200)
 
             elif "startup" in configuration_type:
-                    raise Exception(self.__class__.__name__,
-                                    "Restore of startup config in append mode is not supported")
+                raise Exception("Restore of startup config in append mode is not supported")
             else:
                 restore_action.copy(source=path,
                                     destination=configuration_type,
