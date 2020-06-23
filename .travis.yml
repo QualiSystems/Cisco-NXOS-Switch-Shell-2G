@@ -16,7 +16,7 @@ install:
     - pip install coveralls
 
 script:
-    - nosetests --with-coverage --cover-package=src,cloudshell.networking.cisco.nxos tests package/tests
+    - nosetests --with-coverage --cover-package=src,cloudshell.networking.cisco.nxos tests
 
 after_success:
     - coveralls
