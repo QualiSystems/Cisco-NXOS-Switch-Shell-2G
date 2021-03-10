@@ -60,3 +60,6 @@ target/
 cloudshell_config.yml
 src/test_nxos.py
 *.zip
+
+# Local testing
+src/check_nxos.py
