@@ -1,17 +1,14 @@
-# Cisco-NXOS-Switch-Shell
-CloudShell Networking Cisco NXOS Shell for Switch
-
 [![Build status](https://github.com/QualiSystems/Cisco-NXOS-Switch-Shell-2G/workflows/CI/badge.svg?branch=master)](https://github.com/QualiSystems/Cisco-NXOS-Switch-Shell-2G/actions?query=branch%3Amaster)
-
-# **Cisco NXOS Switch 2G Shell**
 
 ![](https://github.com/QualiSystems/cloudshell-shells-documentaion-templates/blob/master/cloudshell_logo.png)
 
+# **Cisco NXOS Switch 2G Shell**
+
 Release date: March 2017
 
-Shell version: 1.0.0
+`Shell version: 1.0.0`
 
-Document version: 1.0
+`Document version: 1.0`
 
 # In This Guide
 
