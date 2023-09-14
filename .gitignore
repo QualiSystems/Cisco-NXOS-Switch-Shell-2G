@@ -63,3 +63,5 @@ src/test_nxos.py
 
 # Local testing
 src/check_nxos.py
+
+/.idea
