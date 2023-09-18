@@ -4,9 +4,9 @@
 
 # **Cisco NXOS Switch 2G Shell**
 
-Release date: March 2017
+Release date: September 2023
 
-`Shell version: 1.0.0`
+`Shell version: 3.0.0`
 
 `Document version: 1.0`
 
@@ -41,7 +41,7 @@ For detailed information about the shell’s structure and attributes, see the [
 
 Release: **Cisco NXOS Switch 2G Shell**
 
-▪ CloudShell version: 8.0 and above
+▪ CloudShell version: 2020.2 and above
 
 ▪ Cisco OS: Cisco NXOS
 
